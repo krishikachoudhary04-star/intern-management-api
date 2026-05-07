@@ -178,3 +178,21 @@ GitHub: https://github.com/krishikachoudhary04-star
 ## ⭐ Support
 
 If you like this project, give it a ⭐ on GitHub!
+## 🧠 Approach
+
+- Built REST API using Express.js
+- Implemented JWT authentication
+- Used MongoDB for persistent storage
+- Structured project using MVC pattern
+
+## ⚠️ Challenges
+
+- Handling authentication errors
+- MongoDB connection issues
+- Route protection and role-based access
+
+## 🚀 Future Improvements
+
+- Add frontend dashboard
+- Deploy on cloud (Render)
+- Add file upload for intern documents
