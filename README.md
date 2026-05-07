@@ -1,24 +1,36 @@
 # 🧑‍💼 Intern Management API
 
-Production-ready REST API built with **Node.js + Express**.  
-JWT Auth · CRUD · Role-based Access · Input Validation · Rate Limiting · Logging
+Production-ready REST API built with **Node.js, Express, MongoDB, and JWT Authentication**.  
+Includes authentication, role-based access control, CRUD operations, validation, rate limiting, and logging.
 
 ---
 
-## 🚀 Quick Start (VS Code)
+## 🚀 Quick Start
 
 ```bash
-# 1 – Install dependencies
+# Install dependencies
 npm install
 
-# 2 – Start server (auto-reloads on save)
+# Start server (development)
 npm run dev
 
-# OR start without nodemon
+# Start without nodemon
 npm start
 ```
 
-Server runs at → **http://localhost:5000**
+Server runs at → **http://localhost:5001**
+
+---
+
+## 🛠️ Tech Stack
+
+- Node.js
+- Express.js
+- MongoDB (Mongoose)
+- JWT Authentication
+- bcryptjs (Password hashing)
+- express-validator (Validation)
+- winston (Logging)
 
 ---
 
@@ -28,24 +40,29 @@ Server runs at → **http://localhost:5000**
 intern-management-api/
 ├── src/
 │   ├── config/
-│   │   └── store.js          # In-memory data store (simulates DB)
+│   │   └── db.js              # MongoDB connection
 │   ├── controllers/
-│   │   ├── authController.js # Register / Login / Me
-│   │   └── internController.js # CRUD for interns
+│   │   ├── authController.js
+│   │   └── internController.js
 │   ├── middleware/
-│   │   ├── auth.js           # JWT authenticate + authorize
-│   │   ├── errorHandler.js   # Global error + 404 handler
-│   │   └── validator.js      # express-validator rules
+│   │   ├── auth.js
+│   │   ├── errorHandler.js
+│   │   └── validator.js
+│   ├── models/
+│   │   ├── User.js
+│   │   └── Intern.js
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   └── internRoutes.js
 │   ├── utils/
-│   │   └── logger.js         # Winston logger
-│   ├── app.js                # Express setup + rate limiting
-│   └── server.js             # Entry point + admin seed
-├── logs/                     # Auto-created log files
-├── .env                      # Environment variables
-└── package.json
+│   │   └── logger.js
+│   ├── app.js
+│   └── server.js
+├── logs/
+├── .env.example
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
 ---
@@ -59,108 +76,105 @@ Password: Admin@123
 
 ---
 
-## 📡 API Endpoints
+## 🔐 Environment Variables
 
-### Auth
+Create a `.env` file in root:
 
-| Method | Endpoint            | Access  | Description        |
-|--------|---------------------|---------|--------------------|
-| POST   | /api/auth/register  | Public  | Register new user  |
-| POST   | /api/auth/login     | Public  | Login & get token  |
-| GET    | /api/auth/me        | 🔒 Auth | Get current user   |
-
-### Interns
-
-| Method | Endpoint           | Access       | Description             |
-|--------|--------------------|--------------|-------------------------|
-| GET    | /api/interns       | 🔒 Auth      | List all (paginated)    |
-| GET    | /api/interns/:id   | 🔒 Auth      | Get single intern       |
-| POST   | /api/interns       | 🔒 Auth      | Add new intern          |
-| PUT    | /api/interns/:id   | 🔒 Auth      | Update intern           |
-| DELETE | /api/interns/:id   | 🔒 Admin only| Delete intern           |
-
----
-
-## 🧪 Test with VS Code REST Client
-
-Install the **REST Client** extension, then create a file `test.http`:
-
-```http
-### Login as Admin
-POST http://localhost:5000/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@company.com",
-  "password": "Admin@123"
-}
-
-### Add Intern (paste token from login response)
-POST http://localhost:5000/api/interns
-Content-Type: application/json
-Authorization: Bearer YOUR_TOKEN_HERE
-
-{
-  "name": "Riya Sharma",
-  "email": "riya@example.com",
-  "department": "Engineering",
-  "skills": ["Node.js", "React"],
-  "startDate": "2024-06-01",
-  "status": "active"
-}
-
-### List Interns with Pagination
-GET http://localhost:5000/api/interns?page=1&limit=5&department=Engineering
-Authorization: Bearer YOUR_TOKEN_HERE
-
-### Update Intern
-PUT http://localhost:5000/api/interns/1
-Content-Type: application/json
-Authorization: Bearer YOUR_TOKEN_HERE
-
-{
-  "status": "completed"
-}
-
-### Delete Intern (admin only)
-DELETE http://localhost:5000/api/interns/1
-Authorization: Bearer YOUR_TOKEN_HERE
+```env
+PORT=5001
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+JWT_EXPIRES_IN=7d
 ```
 
 ---
 
-## ⚙️ Query Parameters (GET /api/interns)
+## 📡 API Endpoints
 
-| Param       | Type   | Description                       |
-|-------------|--------|-----------------------------------|
-| page        | number | Page number (default: 1)          |
-| limit       | number | Items per page (default: 10)      |
-| department  | string | Filter by department              |
-| status      | string | Filter: active / inactive / completed |
-| search      | string | Search by name or email           |
+### 🔑 Auth Routes
+
+| Method | Endpoint            | Description        |
+|--------|---------------------|--------------------|
+| POST   | /api/auth/register  | Register user      |
+| POST   | /api/auth/login     | Login user         |
+| GET    | /api/auth/me        | Get current user   |
+
+---
+
+### 👤 Intern Routes
+
+| Method | Endpoint            | Description             |
+|--------|--------------------|-------------------------|
+| GET    | /api/interns       | Get all interns         |
+| GET    | /api/interns/:id   | Get single intern       |
+| POST   | /api/interns       | Create intern           |
+| PUT    | /api/interns/:id   | Update intern           |
+| DELETE | /api/interns/:id   | Delete intern (Admin)   |
+
+---
+
+## 🧪 Testing
+
+Use:
+- Postman  
+- Thunder Client (VS Code)
+
+---
+
+## 🔍 Query Parameters (GET /api/interns)
+
+| Param       | Description                       |
+|-------------|-----------------------------------|
+| page        | Page number                       |
+| limit       | Items per page                    |
+| department  | Filter by department              |
+| status      | active / inactive / completed     |
+| search      | Search by name/email              |
 
 ---
 
 ## 👥 Roles
 
-| Role  | Permissions                                          |
-|-------|------------------------------------------------------|
-| user  | View interns, create interns, update own interns     |
-| admin | All of the above + delete any intern + create admins |
+| Role  | Permissions |
+|------|------------|
+| user | View, create, update interns |
+| admin| Full access (including delete) |
 
 ---
 
 ## 🔒 Security Features
 
-- **JWT Authentication** – tokens expire in 7 days
-- **bcrypt** – passwords hashed with 10 salt rounds
-- **Rate limiting** – 100 req/15min globally; 10 req/15min on /login
-- **Input validation** – all fields validated via express-validator
-- **Role-based access** – admin-only routes protected
+- JWT Authentication (7 days expiry)
+- Password hashing using bcrypt
+- Rate limiting
+- Input validation
+- Role-based authorization
+
+---
 
 ## 📝 Logging
 
-Logs are written to:
-- `logs/app.log` – all requests & events
-- `logs/error.log` – errors only
-- Console – colorized output during development
+Logs are stored in:
+- `logs/app.log`
+- `logs/error.log`
+
+---
+
+## 📌 Project Status
+
+✅ Backend Complete  
+🚀 Ready for deployment  
+🎯 Resume-ready project  
+
+---
+
+## 👤 Author
+
+**Krishika Choudhary**  
+GitHub: https://github.com/krishikachoudhary04-star
+
+---
+
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!
