@@ -26,4 +26,4 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { generateToken, protect };36
+module.exports = { generateToken, protect }; 36
